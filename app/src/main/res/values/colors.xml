@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Window and splash colours before Compose draws (Broadsheet tokens: theme.json `color`). -->
+<resources>
+    <color name="heycam_paper">#F4EFE4</color>
+    <!-- The launcher icon's paper, behind the splash mark in both editions. -->
+    <color name="heycam_paper_day">#F4EFE4</color>
+</resources>

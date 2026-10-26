@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Share: files in cacheDir/exports reach other apps only through per-intent read grants (PLAN 3.5, P6). -->
+        <provider
+            android:name="heycam.core.export.ExportFileProvider"
+            android:authorities="${applicationId}.exports"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/heycam_export_paths" />
+        </provider>
+    </application>
+</manifest>

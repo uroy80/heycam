@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Labels the shared components print or read out. Sentence case; caps are applied on screen only. -->
+<resources>
+    <!-- The wordmark "heycam :)" as TalkBack reads it; the smile is decorative. -->
+    <string name="hc_nameplate" translatable="false">heycam</string>
+    <string name="hc_on_this_phone">On this phone</string>
+    <string name="hc_latest">Latest</string>
+    <string name="hc_back">Back</string>
+    <string name="hc_search">Search</string>
+    <string name="hc_settings">Settings</string>
+    <string name="hc_scan">Scan</string>
+    <string name="hc_import_photos">Import photos</string>
+    <string name="hc_open">Open</string>
+    <string name="hc_share">Share</string>
+    <string name="hc_select">Select</string>
+    <string name="hc_cancel">Cancel</string>
+    <string name="hc_delete">Delete</string>
+    <string name="hc_ok">OK</string>
+    <!-- Spoken label of the "?" button next to a control: "About Searchable PDF". -->
+    <string name="hc_about">About %1$s</string>
+    <string name="hc_opens_outside">Opens in your browser</string>
+    <!-- Folio under a page count, as in a printed contents list ("8 pp"). -->
+    <string name="hc_pp">pp</string>
+    <plurals name="hc_pages">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+    <string name="hc_page_number">Page %1$d</string>
+    <string name="hc_page_of">Page %1$d of %2$d</string>
+    <!-- Page reference in a search hit ("p. 3"). -->
+    <string name="hc_page_abbrev">p. %1$d</string>
+    <!-- Tag on a lifted page while dragging ("P. 4"). -->
+    <string name="hc_page_short">P. %1$d</string>
+
+    <!-- Page reordering (TalkBack actions and the drag bar). -->
+    <string name="hc_move_earlier">Move earlier</string>
+    <string name="hc_move_later">Move later</string>
+    <string name="hc_move_to_start">Move to start</string>
+    <string name="hc_move_to_end">Move to end</string>
+    <string name="hc_move_to_position">Move to position…</string>
+    <string name="hc_delete_page">Delete page</string>
+    <string name="hc_moving_page">Moving page %1$d → %2$d</string>
+    <string name="hc_moving_page_spoken">Moving page %1$d to position %2$d</string>
+    <string name="hc_moving_page_here">Moving page %1$d</string>
+    <string name="hc_drop_to_delete">Drop to delete page %1$d</string>
+
+    <!-- Find in recognised text. -->
+    <string name="hc_find">Find</string>
+    <string name="hc_find_previous">Previous match</string>
+    <string name="hc_find_next">Next match</string>
+    <string name="hc_find_position">Match %1$d of %2$d</string>
+    <string name="hc_find_none">No matches</string>
+    <string name="hc_has_matches">Has matches</string>
+    <!-- The honest line under recognised text. -->
+    <string name="hc_ocr_note">Recognised on this phone. Check names and numbers.</string>
+</resources>

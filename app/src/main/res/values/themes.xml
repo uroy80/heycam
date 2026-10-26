@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose draws every screen; these themes only cover the window and the splash screen. -->
+<resources>
+    <style name="Base.Theme.Heycam" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Heycam" parent="Base.Theme.Heycam">
+        <item name="android:windowBackground">@color/heycam_paper</item>
+    </style>
+
+    <!-- Paper with the launcher mark on a paper disc: invisible on Day paper, the icon itself on Night ink. -->
+    <style name="Theme.Heycam.Starting" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/heycam_paper</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/heycam_paper_day</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Heycam</item>
+    </style>
+</resources>

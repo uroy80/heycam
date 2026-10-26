@@ -1,0 +1,242 @@
+# Release to Google Play's internal track.
+#
+#   push a tag vMAJOR.MINOR.PATCH  build: the tagged commit must be on main; test, lint, module and import rules
+#                                  (no network code) and an UNSIGNED bundle (no secrets, no cache), versionCode from
+#                                  the tag (scripts/version-from-tag.sh: v1.3.1 -> 1030100)
+#                                  publish: after approval in the "play" environment, sign with the upload key
+#                                  (scripts/sign-bundle.sh: jarsigner, RSA or EC key, no Gradle), attest, upload to the
+#                                  internal track
+#   run by hand                    "Use workflow from" must be the tag (the environment allows v* tags only, and the
+#                                  build uses that ref); track internal or alpha. upload_to_play=false only signs and
+#                                  keeps the bundle as an artifact (the first upload is made by hand). Play refuses a
+#                                  "completed" release while the app is still a draft; release_status=draft uploads
+#                                  it as a draft release to roll out in Play Console.
+#
+# Without the signing secrets the publish job ends with a notice and changes nothing. CI never promotes to production.
+#
+# "play" environment (required reviewer: the owner; deployments from v* tags only):
+#   secrets UPLOAD_KEYSTORE_B64 (base64 of the PKCS12 upload keystore), UPLOAD_KEYSTORE_PASSWORD, UPLOAD_KEY_ALIAS
+#   vars    GCP_WIF_PROVIDER, GCP_PLAY_SERVICE_ACCOUNT (Workload Identity Federation; the service account may only
+#           release to testing tracks)
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: # from a tag: "Use workflow from" -> vX.Y.Z
+    inputs:
+      track:
+        description: Play track
+        required: true
+        default: internal
+        type: choice
+        options: [internal, alpha]
+      upload_to_play:
+        description: Upload to Play (false = only sign and keep the bundle, for the first upload by hand)
+        required: true
+        default: true
+        type: boolean
+      release_status:
+        description: Release status on the track (draft while Play still treats the app as a draft)
+        required: true
+        default: completed
+        type: choice
+        options: [completed, draft]
+
+permissions: {}
+
+concurrency:
+  group: play-release
+  cancel-in-progress: false
+
+env:
+  PACKAGE_NAME: in.edgr.heycam
+  AAB: app/build/outputs/bundle/release/app-release.aab
+
+jobs:
+  build:
+    name: Build unsigned bundle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read # checkout
+    outputs:
+      version_code: ${{ steps.version.outputs.version_code }}
+      version_name: ${{ steps.version.outputs.version_name }}
+    steps:
+      - name: Run from a release tag
+        run: |
+          if [[ "$GITHUB_REF_TYPE" != tag ]]; then
+            echo "::error::Run this from a v* tag (Use workflow from -> the tag)"
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # all branches, for the check below
+          persist-credentials: false
+
+      - name: The tag is on main
+        run: |
+          if ! git merge-base --is-ancestor HEAD refs/remotes/origin/main; then
+            echo "::error::$GITHUB_REF_NAME is not on main"
+            exit 1
+          fi
+
+      - name: versionCode and versionName from the tag
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: scripts/version-from-tag.sh "$TAG" >>"$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # compileSdk 37 is newer than the runner image's SDK (see ci.yml).
+      - name: Android SDK platform 37
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-37.0" | tr '\r' '\n' | grep -v '^\[' || true
+          if [[ ! -f "$ANDROID_HOME/platforms/android-37.0/android.jar" ]]; then
+            echo "::error::platforms;android-37.0 did not install (sdkmanager output above; a licence not yet accepted on the runner shows there)"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
+            exit 1
+          fi
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+          cache-disabled: true # a release never reads a cache that another branch could have written
+
+      - name: Test, lint, rules and bundle (no signing config, so the bundle is unsigned)
+        env:
+          VERSION_CODE: ${{ steps.version.outputs.version_code }}
+          VERSION_NAME: ${{ steps.version.outputs.version_name }}
+        run: >-
+          ./gradlew --no-daemon
+          -Pheycam.versionCode="$VERSION_CODE"
+          -Pheycam.versionName="$VERSION_NAME"
+          testDebugUnitTest :app:lintRelease
+          checkImports checkModuleGraph :app:checkPermissions
+          :app:bundleRelease
+
+      - name: The bundle is unsigned and 16 KB-aligned
+        run: |
+          "$JAVA_HOME/bin/jarsigner" -verify "$AAB" | grep -qx 'jar is unsigned.'
+          python3 -I scripts/check_elf_16k.py "$AAB"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: unsigned-bundle
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Sign and upload to Play
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: play
+    permissions:
+      contents: read # sparse checkout of the signing script and the release notes
+      id-token: write # Workload Identity Federation and the build attestation
+      attestations: write # build provenance for the signed bundle
+    steps:
+      - name: What can this run do?
+        id: plan
+        env:
+          HAS_KEY: ${{ secrets.UPLOAD_KEYSTORE_B64 != '' && secrets.UPLOAD_KEYSTORE_PASSWORD != '' && secrets.UPLOAD_KEY_ALIAS != '' }}
+          HAS_PLAY: ${{ vars.GCP_WIF_PROVIDER != '' && vars.GCP_PLAY_SERVICE_ACCOUNT != '' }}
+          WANTS_UPLOAD: ${{ github.event_name == 'push' || inputs.upload_to_play }}
+        run: |
+          sign=false upload=false
+          if [[ "$HAS_KEY" == true ]]; then
+            sign=true
+            if [[ "$WANTS_UPLOAD" == true && "$HAS_PLAY" == true ]]; then upload=true; fi
+            if [[ "$WANTS_UPLOAD" == true && "$HAS_PLAY" != true ]]; then
+              echo "::notice::GCP_WIF_PROVIDER / GCP_PLAY_SERVICE_ACCOUNT are not set: the signed bundle is kept as an artifact instead."
+            fi
+          else
+            echo "::notice::No upload key in the play environment: nothing was signed or uploaded."
+          fi
+          echo "sign=$sign" >>"$GITHUB_OUTPUT"
+          echo "upload=$upload" >>"$GITHUB_OUTPUT"
+
+      - if: steps.plan.outputs.sign == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/sign-bundle.sh
+            store/whatsnew
+          sparse-checkout-cone-mode: false
+
+      - if: steps.plan.outputs.sign == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: unsigned-bundle
+          path: out
+
+      - if: steps.plan.outputs.sign == 'true'
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Sign with the upload key
+        if: steps.plan.outputs.sign == 'true'
+        env:
+          UPLOAD_KEYSTORE_B64: ${{ secrets.UPLOAD_KEYSTORE_B64 }}
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+        # scripts/sign-bundle.sh picks SHA256withRSA or SHA256withECDSA from the key (scripts/test-sign-bundle.sh).
+        run: |
+          set -euo pipefail
+          keystore="$RUNNER_TEMP/upload.p12"
+          trap 'rm -f "$keystore"' EXIT
+          printf '%s' "$UPLOAD_KEYSTORE_B64" | base64 -d >"$keystore"
+          scripts/sign-bundle.sh out/bundle/release/app-release.aab "$keystore" "$UPLOAD_KEY_ALIAS"
+
+      - if: steps.plan.outputs.sign == 'true'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: out/bundle/release/app-release.aab
+
+      - name: Keep the signed bundle
+        if: steps.plan.outputs.sign == 'true' && steps.plan.outputs.upload != 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: signed-bundle-${{ needs.build.outputs.version_code }}
+          path: out/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Release notes
+        id: notes
+        if: steps.plan.outputs.upload == 'true'
+        run: |
+          if [[ -d store/whatsnew ]]; then echo "dir=store/whatsnew" >>"$GITHUB_OUTPUT"; fi
+
+      - id: auth
+        if: steps.plan.outputs.upload == 'true'
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_PLAY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - if: steps.plan.outputs.upload == 'true'
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
+        with:
+          serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: out/bundle/release/app-release.aab
+          mappingFile: out/mapping/release/mapping.txt
+          tracks: ${{ inputs.track || 'internal' }}
+          releaseName: ${{ needs.build.outputs.version_name }} (${{ needs.build.outputs.version_code }})
+          status: ${{ inputs.release_status || 'completed' }}
+          whatsNewDirectory: ${{ steps.notes.outputs.dir }}

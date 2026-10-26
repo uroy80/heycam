@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- heycam themed icon (monochrome): ink crop marks + smile in one colour; the launcher tints it. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:strokeColor="#FF000000" android:strokeWidth="4" android:strokeLineCap="square"
+        android:pathData="M33 44V33h11M64 33h11v11M75 64v11H64M44 75H33V64"/>
+    <path android:fillColor="#FF000000"
+        android:pathData="M47.76,47.4m-3.12,0a3.12,3.12 0,1 1,6.24 0a3.12,3.12 0,1 1,-6.24 0 M47.76,60.6m-3.12,0a3.12,3.12 0,1 1,6.24 0a3.12,3.12 0,1 1,-6.24 0"/>
+    <path android:strokeColor="#FF000000" android:strokeWidth="3.84" android:strokeLineCap="round"
+        android:pathData="M56.16 42.6C65.16 48 65.16 60 56.16 65.4"/>
+</vector>

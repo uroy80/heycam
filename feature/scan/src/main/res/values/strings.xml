@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Scanner module bar on Home (S6) -->
+    <string name="scan_scanner">Scanner</string>
+    <string name="scan_getting_scanner">Getting the scanner</string>
+    <string name="scan_installing_scanner">Installing the scanner</string>
+    <string name="scan_one_time">One time · needs internet</string>
+    <string name="scan_percent">%1$d%%</string>
+    <string name="scan_get_failed">Couldn\'t get the scanner</string>
+    <string name="scan_no_connection">No connection</string>
+    <string name="scan_retry">Retry</string>
+    <string name="scan_dismiss">Dismiss</string>
+    <string name="scan_unavailable_no_play_services">Scanning needs Google Play services</string>
+    <string name="scan_unavailable_outdated">Update Google Play services to scan</string>
+    <string name="scan_unavailable_low_ram">This phone can\'t run the scanner. Import photos instead.</string>
+
+    <!-- Messages -->
+    <string name="scan_failed">Couldn\'t do that. Try again.</string>
+    <string name="scan_not_ready">Scanner isn\'t ready yet. Try again soon.</string>
+    <plurals name="scan_rejected">
+        <item quantity="one">Couldn\'t add %d image</item>
+        <item quantity="other">Couldn\'t add %d images</item>
+    </plurals>
+
+    <!-- Review (S7) -->
+    <string name="scan_review">Review</string>
+    <string name="scan_page_of">Page %1$d of %2$d</string>
+    <string name="scan_back">Back</string>
+    <string name="scan_tip">Tip</string>
+    <string name="scan_photo_tip">To straighten a photo, use Scan → gallery.</string>
+    <string name="scan_ok">OK</string>
+    <string name="scan_rotate">Rotate</string>
+    <string name="scan_delete_page">Delete page</string>
+    <string name="scan_previous_page">Previous page</string>
+    <string name="scan_next_page">Next page</string>
+    <string name="scan_filter_original">Original</string>
+    <string name="scan_filter_auto">Auto</string>
+    <string name="scan_filter_grey">Grey</string>
+    <string name="scan_filter_bw">B&amp;W</string>
+    <string name="scan_filter_whiteboard">Whiteboard</string>
+    <plurals name="scan_apply_all">
+        <item quantity="one">Use %1$s on %2$d page</item>
+        <item quantity="other">Use %1$s on all %2$d pages</item>
+    </plurals>
+    <string name="scan_dimensions">%1$d × %2$d</string>
+    <string name="scan_add_page">Add page</string>
+    <string name="scan_add_scan">Scan</string>
+    <string name="scan_add_photos">Photos</string>
+    <plurals name="scan_save_pages">
+        <item quantity="one">Save page</item>
+        <item quantity="other">Save %d pages</item>
+    </plurals>
+    <string name="scan_replace_page">Replace page</string>
+    <plurals name="scan_discard_title">
+        <item quantity="one">Discard this page?</item>
+        <item quantity="other">Discard %d pages?</item>
+    </plurals>
+    <string name="scan_discard">Discard</string>
+    <string name="scan_keep">Keep</string>
+</resources>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Document top bar and menu -->
+    <string name="document_back">Back</string>
+    <string name="document_find">Find in text</string>
+    <string name="document_more">More options</string>
+    <string name="document_rename">Rename</string>
+    <string name="document_move_to_folder">Move to folder</string>
+    <string name="document_pin">Pin</string>
+    <string name="document_unpin">Unpin</string>
+    <string name="document_export">Export</string>
+    <string name="document_read_again">Read again as…</string>
+    <string name="document_trash">Move to trash</string>
+    <string name="document_trash_title">Move this document to trash?</string>
+    <string name="document_cancel">Cancel</string>
+    <string name="document_save">Save</string>
+    <string name="document_name">Name</string>
+    <string name="document_move_to">Move to</string>
+    <string name="document_contents">Contents</string>
+
+    <!-- Meta line, tabs -->
+    <plurals name="document_pages">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+    <string name="document_flag_text">Text</string>
+    <plurals name="document_reading">
+        <item quantity="one">Reading %d page</item>
+        <item quantity="other">Reading %d pages</item>
+    </plurals>
+    <string name="document_tab_pages">Pages</string>
+    <string name="document_tab_text">Text</string>
+    <string name="document_getting_models">Getting text models</string>
+    <string name="document_one_time">One time · needs internet</string>
+    <string name="document_models_failed">Reading text needs internet</string>
+    <string name="document_retry">Retry</string>
+
+    <!-- Page grid -->
+    <string name="document_page_of">Page %1$d of %2$d</string>
+    <string name="document_frame_no">%1$02d</string>
+    <string name="document_open">Open</string>
+    <string name="document_move_earlier">Move earlier</string>
+    <string name="document_move_later">Move later</string>
+    <string name="document_move_to_start">Move to start</string>
+    <string name="document_move_to_end">Move to end</string>
+    <string name="document_move_to_position">Move to position…</string>
+    <string name="document_rotate">Rotate</string>
+    <string name="document_delete_page">Delete page</string>
+    <string name="document_moving">Moving page %1$d → %2$d</string>
+    <string name="document_moved">Page moved to %1$d</string>
+    <string name="document_rotated">Rotated</string>
+    <string name="document_delete">Delete</string>
+    <string name="document_position_title">Move page %1$d to</string>
+    <string name="document_position_label">Position (1–%1$d)</string>
+    <string name="document_move">Move</string>
+    <string name="document_add_page">Add page</string>
+    <string name="document_add_scan">Scan</string>
+    <string name="document_add_photos">Photos</string>
+    <string name="document_text_ready">Text ready</string>
+    <string name="document_text_reading">Reading text</string>
+    <string name="document_text_none">No text found</string>
+    <string name="document_text_failed">Couldn\'t read text</string>
+    <string name="document_text_off">Not read yet</string>
+
+    <!-- Messages -->
+    <string name="document_page_deleted">Page deleted</string>
+    <string name="document_undo">Undo</string>
+    <string name="document_moved_to">Moved to %1$s</string>
+    <string name="document_text_saved">Text saved</string>
+    <string name="document_copied">Copied</string>
+    <string name="document_failed">Couldn\'t do that. Try again.</string>
+    <string name="document_no_space">Not enough space on this phone</string>
+    <string name="document_share_failed">Couldn\'t share. Try again.</string>
+
+    <!-- Text view (S10) -->
+    <string name="document_find_hint">Find</string>
+    <string name="document_find_count">%1$d / %2$d</string>
+    <string name="document_find_none">0 / 0</string>
+    <string name="document_find_count_spoken">Match %1$d of %2$d</string>
+    <string name="document_find_none_spoken">No matches</string>
+    <string name="document_has_matches">Has matches</string>
+    <string name="document_find_previous">Previous match</string>
+    <string name="document_find_next">Next match</string>
+    <string name="document_find_close">Close find</string>
+    <plurals name="document_words">
+        <item quantity="one">%d word</item>
+        <item quantity="other">%d words</item>
+    </plurals>
+    <string name="document_recognised_page">Recognised text · page %1$d of %2$d</string>
+    <string name="document_reading_page">Reading…</string>
+    <string name="document_no_text">No text found</string>
+    <string name="document_read_failed">Couldn\'t read this page</string>
+    <string name="document_not_read">Not read yet</string>
+    <string name="document_read_text">Read text</string>
+    <string name="document_note">Recognised on this phone. Check names and numbers.</string>
+    <string name="document_share_txt">Share text</string>
+    <string name="document_edit">Edit</string>
+    <string name="document_edit_page">Edit page %1$d</string>
+    <string name="document_language">Language</string>
+    <string name="document_copy_all">Copy all</string>
+    <string name="document_editing_page">Editing page %1$d</string>
+    <string name="document_discard_edit_title">Discard your edit?</string>
+    <string name="document_discard">Discard</string>
+    <string name="document_keep_editing">Keep editing</string>
+    <string name="document_read_again_as">Read again as</string>
+    <string name="document_read_again_confirm">Read again</string>
+    <string name="document_script_auto">Auto</string>
+    <string name="document_script_latin">Latin</string>
+    <string name="document_script_devanagari">Devanagari</string>
+    <string name="document_script_chinese">Chinese</string>
+    <string name="document_script_japanese">Japanese</string>
+    <string name="document_script_korean">Korean</string>
+    <plurals name="document_text_pending_title">
+        <item quantity="one">Text is still being read on %d page</item>
+        <item quantity="other">Text is still being read on %d pages</item>
+    </plurals>
+    <string name="document_wait">Wait</string>
+    <string name="document_share_now">Share now</string>
+
+    <!-- Page viewer (S9) -->
+    <string name="document_filter">Filter</string>
+    <string name="document_retake">Retake</string>
+    <string name="document_filter_original">Original</string>
+    <string name="document_filter_auto">Auto</string>
+    <string name="document_filter_grey">Grey</string>
+    <string name="document_filter_bw">B&amp;W</string>
+    <string name="document_filter_whiteboard">Whiteboard</string>
+    <plurals name="document_filter_all">
+        <item quantity="one">Use %1$s on %2$d page</item>
+        <item quantity="other">Use %1$s on all %2$d pages</item>
+    </plurals>
+    <string name="document_filters_shown">Shown</string>
+    <string name="document_filters_hidden">Hidden</string>
+    <string name="document_previous_page">Previous page</string>
+    <string name="document_next_page">Next page</string>
+</resources>

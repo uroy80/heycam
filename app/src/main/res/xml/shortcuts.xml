@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Launcher shortcuts (PLAN F11): Scan, Import, Search. Each opens MainActivity with one of its heycam.action.* intents,
+  which it routes to the scanner, the Photo Picker or Search. targetPackage is the applicationId; a build that adds an
+  applicationIdSuffix needs its own copy of this file.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/entry_shortcut_scan"
+        android:shortcutId="scan"
+        android:shortcutLongLabel="@string/entry_shortcut_scan_long"
+        android:shortcutShortLabel="@string/entry_shortcut_scan">
+        <intent
+            android:action="heycam.action.SCAN"
+            android:targetClass="heycam.app.MainActivity"
+            android:targetPackage="in.edgr.heycam" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/entry_shortcut_import"
+        android:shortcutId="import"
+        android:shortcutLongLabel="@string/entry_shortcut_import_long"
+        android:shortcutShortLabel="@string/entry_shortcut_import">
+        <intent
+            android:action="heycam.action.IMPORT"
+            android:targetClass="heycam.app.MainActivity"
+            android:targetPackage="in.edgr.heycam" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/entry_shortcut_search"
+        android:shortcutId="search"
+        android:shortcutLongLabel="@string/entry_shortcut_search_long"
+        android:shortcutShortLabel="@string/entry_shortcut_search">
+        <intent
+            android:action="heycam.action.SEARCH"
+            android:targetClass="heycam.app.MainActivity"
+            android:targetPackage="in.edgr.heycam" />
+    </shortcut>
+</shortcuts>

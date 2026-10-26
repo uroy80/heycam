@@ -1,0 +1,35 @@
+# Dependabot version updates. Security updates are switched on in Settings > Code security.
+# cooldown: wait 14 days before proposing a new release (most hijacked releases are pulled within days); the version
+# catalog follows the same rule (newest stable at least 14 days old).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 14
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
+
+  # gradle/libs.versions.toml (shared with build-logic), the plugins and the Gradle wrapper.
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 14
+    groups:
+      androidx:
+        patterns: ["androidx.*"]
+      kotlin:
+        patterns: ["org.jetbrains.kotlin*", "org.jetbrains.kotlinx*", "com.google.devtools.ksp*"]
+      tests:
+        patterns: ["junit:*", "org.robolectric*", "com.google.truth*", "app.cash.turbine*", "io.github.takahirom.roborazzi*"]
+    commit-message:
+      prefix: deps

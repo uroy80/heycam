@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_save_failed">Couldn\'t save</string>
+    <string name="settings_no_app">No app can open this</string>
+
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_day">Day paper</string>
+    <string name="settings_theme_night">Night ink</string>
+
+    <string name="settings_scanning">Scanning</string>
+    <string name="settings_default_filter">Default filter</string>
+    <string name="settings_filter_original">Original</string>
+    <string name="settings_filter_auto">Auto</string>
+    <string name="settings_filter_grey">Grey</string>
+    <string name="settings_filter_bw">B&amp;W</string>
+    <string name="settings_filter_whiteboard">Whiteboard</string>
+    <string name="settings_auto_text">Read text automatically</string>
+    <string name="settings_script">Text language</string>
+    <string name="settings_script_auto">Auto</string>
+    <string name="settings_script_latin">Latin</string>
+    <string name="settings_script_devanagari">Devanagari</string>
+    <string name="settings_script_chinese">Chinese</string>
+    <string name="settings_script_japanese">Japanese</string>
+    <string name="settings_script_korean">Korean</string>
+    <string name="settings_script_auto_sample">From your phone\'s languages</string>
+    <string name="settings_script_latin_sample" translatable="false">English, Español, Français, Deutsch</string>
+    <string name="settings_script_devanagari_sample" translatable="false">हिन्दी, मराठी, नेपाली</string>
+    <string name="settings_script_chinese_sample" translatable="false">中文</string>
+    <string name="settings_script_japanese_sample" translatable="false">日本語</string>
+    <string name="settings_script_korean_sample" translatable="false">한국어</string>
+    <string name="settings_models">Download all languages</string>
+    <string name="settings_models_running">Downloading…</string>
+    <string name="settings_models_percent">%1$d%%</string>
+    <string name="settings_models_ready">Ready</string>
+    <string name="settings_models_failed">Couldn\'t download. Tap to retry.</string>
+    <string name="settings_models_offline">No connection</string>
+    <string name="settings_models_unsupported">Not available on this phone</string>
+
+    <string name="settings_export">Export</string>
+    <string name="settings_export_size">Size</string>
+    <string name="settings_size_small">Small</string>
+    <string name="settings_size_standard">Standard</string>
+    <string name="settings_size_original">Original</string>
+    <string name="settings_export_page_size">Page size</string>
+    <string name="settings_page_a4">A4</string>
+    <string name="settings_page_letter">Letter</string>
+    <string name="settings_page_legal">Legal</string>
+    <string name="settings_page_fit">Fit</string>
+    <string name="settings_export_margin">Margin</string>
+    <string name="settings_margin_none">None</string>
+    <string name="settings_margin_narrow">Narrow</string>
+    <string name="settings_margin_normal">Normal</string>
+    <string name="settings_export_searchable">Searchable PDF</string>
+
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_your_data">Your data</string>
+    <!-- PLAN §2 honest limits: never "no data collected" or "100% offline". -->
+    <string name="settings_your_data_statement">Scans stay on this phone. No account, no ads.\n\nGoogle ML Kit sends usage diagnostics to Google.</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+
+    <string name="settings_storage">Storage</string>
+    <string name="settings_space_used">Space used</string>
+
+    <string name="settings_about_group">About</string>
+    <string name="settings_about">About heycam</string>
+
+    <string name="storage_title">Storage</string>
+    <string name="storage_on_this_phone">On this phone</string>
+    <string name="storage_documents">Documents</string>
+    <string name="storage_trash">Trash</string>
+    <string name="storage_temporary">Temporary files</string>
+    <string name="storage_empty">Empty</string>
+    <string name="storage_clear">Clear</string>
+    <string name="storage_open_trash">Open trash</string>
+    <!-- TalkBack label of a row's button, e.g. "Empty, Trash". -->
+    <string name="storage_action_a11y">%1$s, %2$s</string>
+    <!-- Same question as the Trash screen asks for the same action. -->
+    <plurals name="storage_delete_title">
+        <item quantity="one">Delete %d document for good?</item>
+        <item quantity="other">Delete %d documents for good?</item>
+    </plurals>
+    <string name="storage_delete">Delete</string>
+    <string name="storage_freed">Freed %s</string>
+    <string name="storage_nothing_to_clear">Nothing to clear</string>
+    <string name="storage_trash_emptied">Trash emptied</string>
+    <string name="storage_failed">Couldn\'t finish. Try again.</string>
+
+    <string name="about_title">About</string>
+    <string name="about_version">Version %s</string>
+    <string name="about_links">Links</string>
+    <string name="about_source">Source code</string>
+    <string name="about_contact">Contact</string>
+    <!-- TalkBack: where the Contact row goes. -->
+    <string name="about_opens_email">Opens your email app</string>
+    <string name="about_licences">Open-source licences</string>
+    <string name="about_footer">Apache-2.0 · Uses Google ML Kit</string>
+
+    <string name="licences_title">Open-source licences</string>
+    <string name="licences_missing">Couldn\'t open</string>
+</resources>

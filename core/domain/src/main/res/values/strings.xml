@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Title of a new document; %1$s is the date and time, e.g. "Scan 20 Oct 2026, 14:32". -->
+    <string name="domain_default_title">Scan %1$s</string>
+</resources>

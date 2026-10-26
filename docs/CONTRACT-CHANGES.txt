@@ -1,0 +1,25 @@
+heycam contract changes (PLAN §4)
+=================================
+Additive changes need the lead's approval; breaking changes also need an entry here. Newest first.
+Format: date · owner · kind · change · why · status.
+
+2026-10-20 · O10 · additive · :core:data FileStore.clearTemporaryFiles(): SweepReport (default = sweep())
+  Why: Settings → Storage "Clear temporary files" (PLAN F10) must remove every export and ML Kit scanner file,
+  not only the ones sweep() treats as stale. Same declaration as O3's DiskFileStore work, so both branches agree.
+  Status: awaiting lead approval.
+
+2026-10-20 · O10 · additive · :core:domain `fun interface TextModels { fun download(scripts: Set<OcrScript>): Flow<ModuleState> }`
+  with OcrTextModels (delegates to OcrEngine.ensureModels, ends at Ready / Failed / Unsupported) bound in
+  TextModelsModule.
+  Why: Settings "Download text models now" (PLAN F10); features may not depend on :core:ocr (§3.2).
+  Needs: an OcrEngine binding from :core:ocr (O6).
+  Status: awaiting lead approval.
+
+2026-10-20 · O9 · additive · :feature:export ExportRoute(documentIds, compress: Boolean = false) and
+  NavController.navigateToExport(documentIds, compress = false)
+  Why: Tools → Compress opens the sheet preset to Small (PLAN F9). Existing callers compile unchanged.
+  Status: awaiting lead approval.
+
+2026-10-20 · O9 · additive · :feature:tools ToolsTab(onTool, modifier: Modifier = Modifier)
+  Why: lets Home size the tab; existing callers compile unchanged.
+  Status: awaiting lead approval.

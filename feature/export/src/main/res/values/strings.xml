@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="export_kicker">Export</string>
+    <plurals name="export_title_pages">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+    <plurals name="export_title_documents">
+        <item quantity="one">%d document</item>
+        <item quantity="other">%d documents</item>
+    </plurals>
+
+    <string name="export_format">Format</string>
+    <string name="export_format_pdf">PDF</string>
+    <string name="export_format_jpeg">JPG</string>
+    <string name="export_format_png">PNG</string>
+    <string name="export_format_text">Text</string>
+
+    <string name="export_size">Size</string>
+    <string name="export_size_small">Small</string>
+    <string name="export_size_standard">Standard</string>
+    <string name="export_size_original">Original</string>
+    <!-- TalkBack only: a size choice with its estimate, e.g. "Small, about 600 kB". -->
+    <string name="export_size_spoken">%1$s, about %2$s</string>
+
+    <string name="export_page_size">Page size</string>
+    <string name="export_page_a4">A4</string>
+    <string name="export_page_letter">Letter</string>
+    <string name="export_page_legal">Legal</string>
+    <string name="export_page_fit">Fit</string>
+
+    <string name="export_margin">Margin</string>
+    <string name="export_margin_none">None</string>
+    <string name="export_margin_narrow">Narrow</string>
+    <string name="export_margin_normal">Normal</string>
+
+    <string name="export_searchable">Searchable PDF</string>
+    <string name="export_file_name">File name</string>
+
+    <string name="export_save">Save</string>
+    <string name="export_share">Share</string>
+    <string name="export_print">Print</string>
+    <string name="export_close">Close</string>
+
+    <string name="export_running">Exporting…</string>
+    <string name="export_progress">Page %1$d of %2$d</string>
+    <plurals name="export_saved">
+        <item quantity="one">Saved</item>
+        <item quantity="other">Saved %d files</item>
+    </plurals>
+
+    <string name="export_error_no_space">Not enough space</string>
+    <string name="export_error_write">Couldn\'t save. Try again.</string>
+    <string name="export_error_missing">Some pages are missing</string>
+    <string name="export_error_print">Couldn\'t print</string>
+    <string name="export_error_no_app">No app can do this</string>
+    <string name="export_unavailable">Nothing to export</string>
+
+    <plurals name="export_text_pending">
+        <item quantity="one">Text is still being read on %d page</item>
+        <item quantity="other">Text is still being read on %d pages</item>
+    </plurals>
+    <string name="export_text_wait">Wait</string>
+    <string name="export_text_skip">Export without text</string>
+</resources>

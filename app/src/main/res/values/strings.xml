@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">heycam</string>
+
+    <!-- Tools that start from a document. -->
+    <string name="app_pick_document">Pick a document</string>
+    <string name="app_no_documents">Nothing scanned yet</string>
+    <string name="app_cancel">Cancel</string>
+
+    <!-- Images that could not be added (not an image, too large, or not readable). -->
+    <plurals name="app_images_skipped">
+        <item quantity="one">Couldn\'t add %d image</item>
+        <item quantity="other">Couldn\'t add %d images</item>
+    </plurals>
+</resources>

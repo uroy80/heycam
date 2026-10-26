@@ -1,0 +1,211 @@
+# CI on every pull request and every push to main. No secrets, no signing, no Play access.
+#   workflows    actionlint, zizmor and shellcheck over .github/ and scripts/, plus the tests of the versionCode,
+#                device-test count and upload-key signing scripts
+#   build        Android lint, unit tests (JVM, Robolectric, Compose) and build-logic's own tests, module / import /
+#                permission rules, the minified release APK and bundle, the 16 KB page-size checks, and gate G2 over
+#                the generated PDFs (qpdf --check, pdftotext)
+#   screenshots  every module's Roborazzi goldens (design system and the six feature modules), compared on macOS
+#                arm64 because they were recorded there (Robolectric's native graphics anti-alias differently on Linux
+#                x86_64). Run by hand with record_screenshots to re-record them all; review the artifact, then commit.
+# Device tests are not run here: they need the API 37 16 KB arm64 emulator, which GitHub's runners cannot host
+# (docs/RELEASE-CHECKLIST.txt runs them before every tag, and each run checks its own test counts).
+# Branch protection: require the single "CI OK" check.
+# Every action is pinned to a full commit SHA (tag in the comment); Dependabot keeps both current.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      record_screenshots:
+        description: Record new screenshot goldens on the macOS runner and keep them as an artifact
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  workflows:
+    name: Workflows and scripts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read # checkout
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint
+        run: |
+          docker run --rm -v "$PWD:/repo:ro" -w /repo \
+            rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
+      - name: zizmor
+        uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          version: "1.31.1"
+          advanced-security: false # fail with annotations instead of uploading SARIF
+          min-severity: medium
+      - name: shellcheck
+        run: |
+          docker run --rm -v "$PWD:/mnt:ro" -w /mnt \
+            koalaman/shellcheck:v0.11.0@sha256:61862eba1fcf09a484ebcc6feea46f1782532571a34ed51fedf90dd25f925a8d \
+            scripts/*.sh
+      - name: versionCode from tags
+        run: scripts/test-version-from-tag.sh
+
+      - name: Device-test count check
+        run: python3 -I scripts/test-check-test-counts.py
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Upload-key signing (RSA and EC keys)
+        run: scripts/test-sign-bundle.sh
+
+  build:
+    name: Build and test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read # checkout
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # compileSdk 37 (build-logic Conventions.kt) is newer than the runner image's SDK. Installing it here makes a
+      # missing package fail this step, by name, instead of leaving it to AGP's download in the middle of the build.
+      - name: Android SDK platform 37
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-37.0" | tr '\r' '\n' | grep -v '^\[' || true
+          if [[ ! -f "$ANDROID_HOME/platforms/android-37.0/android.jar" ]]; then
+            echo "::error::platforms;android-37.0 did not install (sdkmanager output above; a licence not yet accepted on the runner shows there)"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
+            exit 1
+          fi
+
+      # Validates the wrapper jar; the cache is written only from main, so pull requests cannot poison it.
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic # the MIT-licensed provider; "enhanced" is the proprietary default
+
+      # :core:pdf's tests always run (--rerun): a result from the build cache would not write the PDF fixtures.
+      - name: Lint, tests, module rules, release build
+        run: >-
+          ./gradlew --no-daemon
+          lint testDebugUnitTest :build-logic:convention:test
+          checkModuleGraph checkImports :app:checkPermissions
+          :app:assembleRelease :app:bundleRelease
+          :core:pdf:testDebugUnitTest --rerun
+
+      - name: PDF fixtures (qpdf, pdftotext)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qpdf poppler-utils
+          scripts/check-pdf-fixtures.sh core/pdf/build/pdf-fixtures
+
+      - name: 16 KB page size
+        env:
+          AAB: app/build/outputs/bundle/release/app-release.aab
+          APK: app/build/outputs/apk/release/app-release-unsigned.apk
+        run: |
+          python3 -I scripts/check_elf_16k.py "$AAB"
+          python3 -I scripts/check_elf_16k.py "$APK"
+          build_tools="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          "$build_tools/zipalign" -c -P 16 4 "$APK"
+
+      - name: Keep the reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
+            core/pdf/build/pdf-fixtures/
+          retention-days: 7
+
+  screenshots:
+    name: Screenshots
+    runs-on: macos-15 # Apple silicon, like the Mac the goldens were recorded on
+    timeout-minutes: 45
+    permissions:
+      contents: read # checkout
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # compileSdk 37 (build-logic Conventions.kt) is newer than the runner image's SDK. Installing it here makes a
+      # missing package fail this step, by name, instead of leaving it to AGP's download in the middle of the build.
+      - name: Android SDK platform 37
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-37.0" | tr '\r' '\n' | grep -v '^\[' || true
+          if [[ ! -f "$ANDROID_HOME/platforms/android-37.0/android.jar" ]]; then
+            echo "::error::platforms;android-37.0 did not install (sdkmanager output above; a licence not yet accepted on the runner shows there)"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
+            exit 1
+          fi
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+
+      # Every module with goldens. The runner has 7 GB: Kotlin compiles inside Gradle's 3 GB, as on the 16 GB Mac
+      # that runs the whole suite with 2 GB.
+      - name: Compare with the goldens
+        if: ${{ !inputs.record_screenshots }}
+        run: >-
+          ./gradlew --no-daemon -Dorg.gradle.jvmargs="-Xmx3g -Dfile.encoding=UTF-8"
+          -Pkotlin.compiler.execution.strategy=in-process
+          verifyRoborazziDebug
+
+      - name: Record new goldens
+        if: ${{ inputs.record_screenshots }}
+        run: >-
+          ./gradlew --no-daemon -Dorg.gradle.jvmargs="-Xmx3g -Dfile.encoding=UTF-8"
+          -Pkotlin.compiler.execution.strategy=in-process
+          recordRoborazziDebug
+
+      - name: Keep the screenshots
+        if: ${{ failure() || inputs.record_screenshots }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: screenshots
+          path: |
+            */*/build/outputs/roborazzi/
+            */*/src/test/screenshots/
+          retention-days: 7
+
+  ci-ok:
+    name: CI OK
+    if: ${{ always() }}
+    needs: [workflows, build, screenshots]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Every job passed
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          if grep -qE '"(failure|cancelled|skipped)"' <<<"$RESULTS"; then exit 1; fi

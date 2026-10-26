@@ -1,0 +1,41 @@
+Point, scan, done. heycam turns paper into clean PDFs and reads the text in them, right on your phone.
+
+SCAN
+• Finds the edges of the page and straightens it
+• Takes the picture by itself when the page is steady
+• Many pages in one go, or pick photos from your gallery
+• Removes stains and fingers while you scan
+• Filters: Original, Auto, Grey and Black & white. Change them any time.
+
+EDIT
+• Rotate, reorder, add, retake or delete pages
+• PDF pages in A4, Letter, Legal or fitted to the scan, with or without margins
+
+READ THE TEXT
+• Latin script (English, Spanish, French and more), Devanagari (Hindi, Marathi and more), Chinese, Japanese and Korean
+• Searchable PDFs: find and copy words in your PDF reader
+• Copy, fix and share the text
+• Search your scans by name or by the words inside them
+
+KEEP IT TIDY
+• Folders, pins and recent scans
+• A trash you can restore from
+
+SHARE
+• PDF, JPG, PNG or plain text
+• Small, Standard or Original size, with the file size shown before you save
+• Share, print, or save a copy to any folder, including cloud storage apps on your phone
+
+YOURS
+• Your scans stay on your phone. heycam never uploads them.
+• No account, no sign-in, no ads, no watermark
+• Scan from Quick Settings or a long press on the app icon
+• Dark mode, large text and TalkBack
+• Open source under Apache-2.0: github.com/uroy80/heycam
+
+GOOD TO KNOW
+• Scanning needs Google Play services and about 2 GB of RAM. The scanner downloads once from Google Play services, so your first scan needs internet. Chinese, Japanese and Korean text recognition downloads the first time you use it.
+• Scanning and text recognition use Google ML Kit, which sends Google diagnostic data such as device details and performance.
+• Recognised text can have mistakes. Check names and numbers.
+• Imported photos are not cropped automatically. To straighten one, tap Scan and pick it from the gallery.
+• Scans are not part of Google's cloud backup, so export anything you want to keep elsewhere.

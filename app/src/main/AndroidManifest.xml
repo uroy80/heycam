@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    heycam's manifest (PLAN §3.5). heycam's own code declares no permissions: the release build may only request what
+    config/permissions-allowlist.txt lists (./gradlew :app:checkPermissions). No camera, media or storage permissions:
+    the ML Kit scanner and the Photo Picker work without them.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- D9: scans stay out of Google cloud backup but move with phone-to-phone transfer (rules live in :core:data). -->
+    <application
+        android:name=".HeycamApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Heycam">
+
+        <!--
+            Shortcuts and the Quick Settings tile start this activity explicitly with heycam.action.SCAN / IMPORT /
+            SEARCH (LaunchAction), so those actions need no intent filter.
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Heycam.Starting"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- F3: images shared from other apps. Only content:// URIs are read (P7). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <!-- F11: the "Scan" Quick Settings tile. -->
+        <service
+            android:name=".entry.ScanTileService"
+            android:exported="true"
+            android:icon="@drawable/entry_ic_tile_scan"
+            android:label="@string/entry_tile_scan"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- P6: the applicationId + ".exports" FileProvider (cacheDir/exports/ only) is declared by :core:export. -->
+
+        <!-- The Photo Picker backport for API 28-29, installed through Google Play services (the class is theirs). -->
+        <service
+            android:name="com.google.android.gms.metadata.ModuleDependencies"
+            android:enabled="false"
+            android:exported="false"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+            </intent-filter>
+            <meta-data
+                android:name="photopicker_activity:0:required"
+                android:value="" />
+        </service>
+
+        <!-- D5: Latin and Devanagari text models install with the app; Chinese, Japanese and Korean on first use. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr,ocr_devanagari" />
+    </application>
+</manifest>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- heycam line icon, 24 dp, 1.5 stroke (generated; Apache-2.0). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M18.99,10.78L20.95,11.01L20.95,12.99L18.99,13.22L17.81,16.08L19.02,17.63L17.63,19.02L16.08,17.81L13.22,18.99L12.99,20.95L11.01,20.95L10.78,18.99L7.92,17.81L6.37,19.02L4.98,17.63L6.19,16.08L5.01,13.22L3.05,12.99L3.05,11.01L5.01,10.78L6.19,7.92L4.98,6.37L6.37,4.98L7.92,6.19L10.78,5.01L11.01,3.05L12.99,3.05L13.22,5.01L16.08,6.19L17.63,4.98L19.02,6.37L17.81,7.92Z M12,9a3,3 0 1,0 0,6a3,3 0 1,0 0,-6Z"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

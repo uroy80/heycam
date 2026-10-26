@@ -1,0 +1,10 @@
+# Permissions the release build may request (PLAN §3.5), checked by ./gradlew :app:checkPermissions.
+# heycam's own code declares none. Adding a line here needs a Data safety review first (PLAN §7.4).
+# ${applicationId} stands for the app's id.
+
+# ML Kit and Play services: module and model downloads, ML Kit diagnostics
+android.permission.INTERNET
+android.permission.ACCESS_NETWORK_STATE
+
+# androidx.core: guards receivers registered as not exported
+${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION

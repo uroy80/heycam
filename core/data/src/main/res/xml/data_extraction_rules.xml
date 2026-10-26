@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ (PLAN D9): nothing goes to Google cloud backup; phone-to-phone transfer moves the library
+  (page files, the database and settings). Referenced by android:dataExtractionRules in :app's manifest.
+  Left behind on transfer: ML Kit's per-installation ID (shared prefs com.google.mlkit.internal) and its queued
+  diagnostics (database com.google.android.datatransport.events). Both SDKs recreate them, so the new phone gets
+  its own ID and nothing is sent twice. The system leaves the database's -journal and -wal files with it.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_root" path="." />
+        <exclude domain="device_file" path="." />
+        <exclude domain="device_database" path="." />
+        <exclude domain="device_sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="file" path="." />
+        <include domain="database" path="." />
+        <include domain="sharedpref" path="." />
+        <exclude domain="sharedpref" path="com.google.mlkit.internal.xml" />
+        <exclude domain="database" path="com.google.android.datatransport.events" />
+    </device-transfer>
+</data-extraction-rules>

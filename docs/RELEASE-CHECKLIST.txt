@@ -1,0 +1,114 @@
+heycam release checklist
+========================
+Run for every release candidate (vX.Y.Z tag). Attach the results to the release PR.
+
+0. Once, before the first release, in this order
+   [ ] Push main: git remote add origin https://github.com/uroy80/heycam.git, then git push -u origin main. The
+       policy's history link, the site's Source links, About → Source code and the listing all point there.
+   [ ] Turn on Actions and let CI run on main. On that first run:
+       - "Android SDK platform 37" installs on both runners (ubuntu-24.04, macos-15).
+       - Screenshots compares the goldens of all seven modules. They were recorded on macOS 27; if the job fails
+         only on pixels, run CI by hand with record_screenshots, review the "screenshots" artifact (it holds every
+         module's src/test/screenshots) and commit the goldens from it.
+       - Note how long Build and test (cap 60 min) and Screenshots (cap 45 min) took. For scale: the build job's
+         tasks ran cold (--rerun-tasks, no build cache, dependencies already downloaded) in 3 min 33 s on the
+         owner's Mac with 3 workers on 2026-10-27. The Screenshots job's command, with its flags (-Xmx3g, Kotlin
+         in-process, --no-daemon, 3 workers), ran cold in 1 min 4 s there; all its Java processes together peaked
+         at 4.2 GB resident (8 processes), against the macos-15 runner's 7 GB.
+   [ ] Deploy docs/ to /srv/heycam/site: index.html, privacy/index.html and assets/. If the policy goes up on a
+       later day than its "Last updated", set its <time> to that day and commit first.
+   [ ] scripts/check-go-live.sh passes: main is on GitHub, the site serves docs/ exactly, the policy's date holds.
+
+1. Before tagging
+   [ ] CI green on main ("CI OK"): lint, testDebugUnitTest, build-logic's tests, checkModuleGraph, checkImports,
+       :app:checkPermissions, the release APK and bundle with the 16 KB checks, the PDF fixtures
+       (scripts/check-pdf-fixtures.sh: qpdf --check and pdftotext) and the screenshots (verifyRoborazziDebug for
+       the design system and the six feature modules, macOS).
+   [ ] Device tests on the API 37 16 KB emulator (system image android-37.0 google_apis_playstore_ps16k, AVD
+       heycam_integrate_api37), online. A test APK that crashes at startup still "passes" in Gradle with 0 tests,
+       so each connected run ends with its module's count check (check<Debug|Release>DeviceTestCount, which fails
+       the build). The script prints the whole run:
+         ./gradlew connectedDebugAndroidTest
+         python3 -I scripts/check-test-counts.py debug      expect 18: app 14, core/data 1, core/ocr 2, core/imaging 1
+         ./gradlew -Pheycam.testBuildType=release :app:connectedReleaseAndroidTest
+         python3 -I scripts/check-test-counts.py release    expect app 14, on the R8 build
+       The release run first runs scripts/check-test-apk.py, which prints any rule app/r8-test-entrypoints.pro needs.
+       A run that stops early with "Module config changed, forcing restart" in its logcat lost its process to
+       Play services updating a text model the tests had loaded, which it does just after an install: run it again.
+   [ ] Permissions unchanged (config/permissions-allowlist.txt). If anything changed: Data safety review first.
+   [ ] A new runtime dependency is in NOTICE and in the app's Licences list (feature/settings OpenSourceLicences).
+   [ ] PDF viewer pass recorded in docs/pdf-compat.txt (search, copy, selection alignment).
+   [ ] store/whatsnew/whatsnew-en-US updated (500 characters or less).
+
+2. Real device (owner's phone), on the Play internal-track build: release, R8, signed by Play, installed from the
+   internal testing link rather than from a local build. Record the pass in docs/device-pass.txt (TalkBack in
+   docs/accessibility.txt).
+   [ ] Scan a real A4 English letter and a Hindi letter with the real scanner; auto-capture fires; Review, save.
+   [ ] Receipt in low light; 20 pages in one go.
+   [ ] Gallery import inside the scanner; Import from the Photo Picker; share images in from another app.
+   [ ] Text: spot-check recognition; search finds a word from the text; Copy all and Share text work.
+   [ ] Export: save a searchable PDF to Downloads, open it in Acrobat and Drive, search and copy a word.
+   [ ] Export JPG and Text; size estimates shown for Small / Standard / Original.
+   [ ] Print to "Save as PDF".
+   [ ] Share to Gmail and WhatsApp.
+   [ ] Tools: every row. Compress opens the sheet on Small; Extract text opens the text view; Print prints; the
+       heypdf link shows its notice.
+   [ ] Settings: theme switch (System / Day paper / Night ink); default filter used on the next scan; export
+       defaults used by the sheet; Download all languages; Storage figures; Storage → Trash → Empty asks
+       "Delete N documents for good?"; Clear temporary files.
+   [ ] A text model that is not on the phone yet: Text → Language → Read again as Chinese, Japanese or Korean
+       (and Settings → Download all languages) after a page was read in Latin. heycam stays open and reads the
+       page. Play services restarts an app when it updates a text model that app has loaded ("Module config
+       changed, forcing restart" in logcat; seen on the emulator right after an install); if heycam closes, record
+       it in docs/device-pass.txt, and check the page is read after reopening.
+   [ ] Settings → Licences opens every licence.
+   [ ] Flight mode after install: everything works except first-time module downloads.
+   [ ] Quick Settings tile "Scan" (also from the lock screen: asks to unlock first); shortcuts Scan, Import, Search.
+   [ ] TalkBack pass over Home, Review, Document, Text, Export, Tools, Settings; record it in
+       docs/accessibility.txt (date, phone, Android and TalkBack versions, what failed).
+   [ ] Font size 200% on the phone, and on a 360 dp wide screen (adb shell wm density so that the width in px
+       / (density / 160) = 360): nothing clipped. Dark mode.
+   [ ] Landscape on a phone with a camera cutout: nothing under the cutout on Home, Review, Document, Export.
+   [ ] Process death: Developer options "Don't keep activities", then return to Review and to the export sheet.
+       Then, with the "Save to" picker open, adb shell am kill in.edgr.heycam, and save: the file is written with
+       the choices made before.
+   [ ] Android 9 to 12 (minSdk 28; every other test runs on 36 or 37): one phone, or an API 28 to 32 emulator
+       (sdkmanager --install "system-images;android-31;google_apis_playstore;arm64-v8a"), with the release build:
+       scan or import, read, export a PDF, share. Record it in docs/device-pass.txt.
+   [ ] In the scanner, pick a GPS-tagged photo and a motion photo from the gallery and save. Export each as JPG
+       and as PDF at Original: no GPS EXIF (exiftool), and the JPG holds only the still, without the video.
+
+3. Source, privacy and listing
+   [ ] github.com/uroy80/heycam has main (LICENSE, NOTICE, docs/privacy/index.html) and the vX.Y.Z tag;
+       github.com/uroy80/heycam/commits/main/docs/privacy/index.html shows the policy's history.
+   [ ] https://heycam.edgr.in/privacy/ matches the app (date updated if anything changed) and is live:
+       scripts/check-go-live.sh passes (main pushed; the home page, the policy and every file in docs/assets/ served
+       as committed, with the site's Content-Security-Policy; the policy's date), and the page is styled on a phone.
+   [ ] Settings → Your data → Privacy policy and About → Privacy policy open that page.
+   [ ] Play Console → App content → Privacy policy has that URL.
+   [ ] Data safety unchanged: collects data, encrypted in transit, no deletion request; Diagnostics and Device or
+       other IDs collected (not shared, required, Analytics) because of Google ML Kit; nothing else declared; no
+       ads, no advertising ID.
+   [ ] Phone screenshots present (2 to 8) in store/listings/en-US/graphics/phone-screenshots/ and match the
+       current build (store/README.md has the capture steps; StoreListingTest checks size and alpha).
+   [ ] Listing copy states the limits: Google Play services and about 2 GB RAM for scanning; Latin, Devanagari,
+       Chinese, Japanese and Korean only; ML Kit diagnostics.
+   [ ] Every feature the listing names has been seen working on a phone. "TalkBack" (YOURS) stays in the listing
+       that production makes public only with a real-phone pass in docs/accessibility.txt; otherwise take it out.
+
+4. Upload
+   [ ] Tag vX.Y.Z on main and push it; release.yml's build job green; approve the `play` environment.
+       By hand: Actions → Release → Run workflow with "Use workflow from" set to the tag vX.Y.Z (the environment
+       takes v* tags only, and the build uses that ref).
+   [ ] Internal testing first; closed (alpha) track only after the internal build checks out.
+
+5. Play Console, personal account (once; only the owner can do these)
+   [ ] First upload by hand: run release.yml from the tag v0.1.0 with upload_to_play off, approve, download the
+       signed-bundle-10000 artifact. Internal testing: you plus one or two people who are not closed testers. Keep
+       the Google-generated app signing key (Play App Signing), upload, roll out.
+   [ ] API access: invite the release service account with only "Release apps to testing tracks"; set
+       GCP_WIF_PROVIDER and GCP_PLAY_SERVICE_ACCOUNT in the `play` environment.
+   [ ] Closed test: 15 to 20 testers through a Google Group, so that 12 or more stay opted in for 14 days in a row.
+       Closed testing (alpha) with the internal build; keep a log of the feedback.
+   [ ] From day 15, with 12 or more testers still opted in: Dashboard → Apply for production, answering from the log.
+   [ ] Production: create the release from the closed-test build, choose countries, roll out.

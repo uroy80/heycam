@@ -1,0 +1,39 @@
+heycam device record: real phone and emulator passes
+Update once per release candidate (docs/RELEASE-CHECKLIST.txt §2). TalkBack goes in docs/accessibility.txt.
+Production waits for a real-phone pass of the Play-signed internal build, plus one Android 9 to 12 device or
+emulator (minSdk 28), in the table below.
+
+REAL PHONE PASS (Play-signed internal build, installed from the internal testing link)
+| Date | Phone, Android, Play services | Build | Checklist §2 items | Failed | Notes |
+|------|-------------------------------|-------|--------------------|--------|-------|
+|      |                               |       |                    |        |       |
+
+ANDROID 9 TO 12 PASS (phone or API 28 to 32 emulator, release build)
+| Date | Device, Android | Build | Scan or import, read, export PDF, share | Notes |
+|------|-----------------|-------|-----------------------------------------|-------|
+|      |                 |       |                                         |       |
+
+EMULATOR RECORD (no substitute for the passes above)
+2026-10-27, new AVD heycam_close_api37 (API 37, Android 17 CE2A.260420.050, 16 KB pages, arm64), Play services
+26.41.31, Play Store 53.7.23, no text models on it yet; debug build of 0b60cf3 (versionName 0.0.0-dev).
+- Text models: a photo imported from the Photo Picker was read in Latin. Text → Language → Read again as Japanese
+  made Play services install mlkit.ocr.japanese while Latin was loaded in heycam; heycam kept the same process and
+  read the page. The same held for Devanagari (Latin and Japanese loaded), Korean (Devanagari loaded) and
+  Settings → Download all languages (Chinese, the other four loaded: "Ready"). Adding a model did not restart
+  heycam ("Module config changed, forcing restart" never appeared); updating a loaded one does (device tests,
+  below). A real phone with other Play services versions stays on the list.
+- Process death with the "Save to" picker open: export sheet set to Small, Letter, Narrow; Save; in the picker,
+  adb shell am kill in.edgr.heycam; SAVE. heycam came back in a new process and wrote the file: 1 page, Letter
+  612 x 792 pt, 60,297 bytes (the sheet said about 62 kB), PDF 1.7, the text layer read by pdftotext.
+- 200% text on a 360 dp wide screen (wm density 480 on 1080 px, font_scale 2.0): Home and the export sheet have
+  nothing clipped; the sheet's size and page-size choices stack and scroll, and Save, Share and Print are reached
+  by scrolling. The file name field scrolls sideways.
+- Landscape with the "tall" cutout overlay: Document (Pages and Text) keep clear of the cutout.
+- Device tests, heycam_integrate_api37, after the changes of 0b60cf3 to 2e4ee47: connectedDebugAndroidTest 18/18
+  (app 14, core/data 1, core/ocr 2, core/imaging 1). The first R8 release run stopped after 11 of 14: ten seconds
+  after Play services handled the fresh install, "DynamiteLoaderV2Impl: Module config changed, forcing restart due
+  to module mlkit_ocr_devanagari" killed the process that had the Devanagari model loaded. The second run: 14/14.
+  So Play services does restart heycam when it updates a model heycam has loaded; pages left PENDING are read at
+  the next start (or marked skipped when automatic reading is off).
+- Not covered here: TalkBack (adb cannot drive its gestures), Android 9 to 12 (no such system image on the build
+  Mac), the Play-signed build, the real scanner camera.

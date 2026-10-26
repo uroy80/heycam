@@ -1,0 +1,19 @@
+.work/
+.gradle/
+build/
+local.properties
+*.keystore
+*.jks
+# The upload key is PKCS12; release outputs and raw store captures stay out too.
+*.p12
+*.aab
+*.apk
+/store/raw/
+.kotlin/
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+.claude/

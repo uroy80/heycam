@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="tools_scan_to_pdf">Scan to PDF</string>
+    <string name="tools_import_photos">Import photos</string>
+    <string name="tools_compress">Compress a document</string>
+    <string name="tools_extract_text">Extract text</string>
+    <string name="tools_print">Print</string>
+
+    <string name="tools_heypdf">More PDF tools on heypdf.edgr.in</string>
+    <string name="tools_heypdf_title" translatable="false">heypdf.edgr.in</string>
+    <!-- PLAN P9: binding disclosure for the heypdf link. -->
+    <string name="tools_heypdf_disclosure" tools:ignore="Typos">Opens heypdf.edgr.in in your browser. Files you upload there leave your phone and are processed on heypdf\'s server.</string>
+    <string name="tools_open">Open</string>
+    <string name="tools_cancel">Cancel</string>
+    <string name="tools_no_browser">No browser found</string>
+</resources>

@@ -1,0 +1,72 @@
+heycam export presets: measured page sizes
+==========================================
+
+Owner: :core:imaging. Source of the numbers: core/imaging/src/test/kotlin/heycam/core/imaging/ExportPresetMeasurementTest.kt,
+which renders every preset x MVP filter through the production PageRenderer and fails if the sizes leave the budgets
+below. Re-run it after any change to SizePreset, the filters or the renderer, and update this file:
+
+    ./gradlew :core:imaging:testDebugUnitTest --tests '*ExportPresetMeasurementTest*'
+
+(the table is in the test's standard output, core/imaging/build/test-results/testDebugUnitTest/*.xml).
+
+
+Presets (heycam.core.model.SizePreset, unchanged after measuring)
+------------------------------------------------------------------
+
+    preset     long edge     JPEG quality
+    SMALL      1600 px       60
+    STANDARD   2400 px       80
+    ORIGINAL   as stored     92      (pages are stored at 4000 px or less)
+
+A preset never enlarges a page. ORIGINAL with identity edits passes the stored bytes through (PLAN 3.12), so its
+real size is the stored file's size, not the re-encoded figure below.
+
+
+Measured on 2026-10-20 (JVM, Robolectric native graphics: Skia + libjpeg-turbo, the same encoder family as Android)
+-----------------------------------------------------------------------------------------------------------------------
+
+KB per page, JPEG image only:
+
+    sample  filter         Small   Standard   Original
+    scan    ORIGINAL          73         93        111
+    scan    AUTO              76         94        115
+    scan    GRAYSCALE         76         93        113
+    scan    BLACK_WHITE       79         98        122
+    photo   ORIGINAL          61        236       1836
+    photo   AUTO              64        266       1897
+    photo   GRAYSCALE         65        264       1887
+    photo   BLACK_WHITE       85        185        381
+
+Samples:
+- scan:  a page the ML Kit scanner returned on the API 37 emulator (1081 x 1549 px, already cleaned up by ML Kit).
+         It is below 1600 px, so Small and Standard differ only in JPEG quality here.
+- photo: the same page enlarged to 2480 x 3554 px (A4 at 300 dpi) with tinted paper, uneven light and +-4 sensor
+         noise, standing in for a full-resolution phone capture. The noise is a worst case: it is what makes Original
+         large; real ML Kit output is cleaner.
+
+Budgets the test enforces (KB per page): Small 300, Standard 900, Original 2500; and Small < Standard < Original for
+every sample and filter.
+
+What this means for a 10-page searchable PDF (image bytes x 10, plus about 2 KB per page of PDF structure and text
+layer and one embedded glyphless font):
+- Small: about 0.6 - 0.9 MB
+- Standard: about 1 - 2.7 MB
+- Original: about 1 - 19 MB (depends almost entirely on the capture)
+
+B&W pages compress worse than their pixel count suggests at Small (hard edges ring under JPEG q60). CCITT G4 for
+B&W pages stays an optional M2 size task (PLAN 3.10), only if measured to matter.
+
+
+Guidance for ExportService.estimate
+-----------------------------------
+- Measured (SizeEstimate.measured = true): encode the selection's largest page (by its pixels once fitted to the
+  preset) at the chosen preset, then size every other page by its own pixel count at that page's bytes per pixel,
+  and add the PDF overhead above. Pages copied byte for byte (Original, stored as JPEG, any format but PNG) count
+  their stored bytes. Mixed page sizes add up correctly this way; scaling one page by the page count does not.
+- When encoding fails or runs out of memory (measured = false), the stored image sizes stand in.
+
+
+To do on a real phone (M1, real-device checklist)
+-------------------------------------------------
+Re-measure with the owner's phone scans (A4 English and Hindi letters, a low-light receipt) and replace the table, or
+tune SizePreset in :core:model if Small is above 150 KB or Standard above 500 KB per page for normal documents.

@@ -1,0 +1,86 @@
+heycam searchable PDF: viewer compatibility (gate G2, PLAN 6.5)
+Owner: O5 (PDF & export). Update this file once per release candidate.
+
+WHAT IS CHECKED
+- The invisible text layer of heycam's PDFs: search, copy and selection alignment in real viewers.
+- Writer: :core:pdf PdfBoxPdfService (PDFBox-Android 2.0.27.0). One Tj per OCR line, render mode 3, Type0 /
+  Identity-H font with an embedded one-glyph TrueType (GlyphlessFont, generated in code), ToUnicode bfchar per
+  CID, Tz so each line spans its box, line angle through Tm, header %PDF-1.7. A gently tilted line is turned
+  towards horizontal about its centre until its baseline climbs or falls by at most 0.4 x its height (poppler cuts a
+  line once that passes about half the height), provided its ends move by no more than 0.6 x its height; a steeper
+  line keeps its own angle (TextLayer.level).
+
+FIXTURES
+- Made by a Robolectric test:
+    ./gradlew :core:pdf:testDebugUnitTest --tests '*PdfCompatFixturesTest*'
+  Output: core/pdf/build/pdf-fixtures/*.pdf plus expected.txt ("<file><TAB><text that must be found>").
+- latin.pdf     FIT, no margin        Latin lines, an e-mail address
+- hindi.pdf     A4, narrow margin     Devanagari and English
+- cjk.pdf       Letter, normal margin Japanese, Korean (with a space), hiragana
+- rotated.pdf   Legal, landscape page two lines turned 3 degrees
+- tilted.pdf    A4, normal margin     three long lines turned 2.5 degrees (a scan that is not quite square)
+- non-bmp.pdf   A4                    a character outside the Basic Multilingual Plane (U+20BB7)
+
+AUTOMATED CHECKS (CI, ubuntu)
+- for each fixture: qpdf --check <file>; pdftotext -enc UTF-8 <file> - | grep -F <expected text>
+- The JVM tests already read every fixture back with PDFBox's PDFTextStripper and check glyph positions are within
+  2 pt of the OCR line box (PdfBoxPdfServiceTest); a levelled line by design sits off its box by up to 0.6 x its
+  height at its ends and on it at its centre (TextLayerTest).
+
+RESULTS
+2026-10-21, macOS 27.0.1 (local, before CI exists)
+- poppler pdftotext 26.06.0: all 12 expected strings found, one line per OCR line (rotated lines included).
+- poppler pdfinfo: no errors or warnings on any fixture; "PDF version: 1.7"; Title and Producer set.
+- Apple PDFKit (the engine behind Preview and Safari), PDFDocument.findString: all 12 found; selection bounds sit
+  on the line boxes.
+- qpdf: not installed locally; runs in CI.
+
+2026-10-27, Ubuntu 24.04.5 LTS: the packages CI's build job installs (ubuntu-24.04), run in an ubuntu:24.04
+container on the same fixtures with scripts/check-pdf-fixtures.sh
+- qpdf 11.9.0 --check: exit 0 on all five fixtures, so no errors and no warnings (a warning would exit 3).
+- poppler pdftotext 24.02.0: all 12 expected strings found.
+- poppler pdfinfo 24.02.0: "PDF version: 1.7", no errors or warnings on any fixture.
+
+2026-10-27, macOS 27.0.1, after levelling tilted lines (TextLayer.level). The emulator walk's export had shown
+poppler cutting lines turned about 6 degrees mid-word ("CJK SAM" / "PLE", "Tokyo Stat" / "ion"); the new tilted.pdf
+fixture fails the same way with the old writer (all 3 lines cut) and passes with the new one.
+Fixtures (15 expected strings), each engine run on the files themselves:
+- poppler pdftotext 26.06.0: 15/15, one line per OCR line.
+- PDFium 153.0.7999 (pypdfium2 5.13.0; the engine of Chrome and of Android's PdfRenderer): text 15/15; search 14/15.
+  Its search does not find a character outside the Basic Multilingual Plane ("𠮷"), though its text has it; the
+  rest of that line ("野家 rice bowl") is found. Not a heycam defect.
+- Apple PDFKit, macOS 27.0.1 (PDFDocument.findString and document text): 15/15.
+- pdf.js 6.4.195, the build inside Firefox 158 (getTextContent, joined as the find bar joins it): 15/15.
+- pdfminer.six 20260107: 15/15. Ghostscript txtwrite: 14/15 (writes "𠮷" as two surrogates).
+- qpdf 12.4.2 (through pikepdf), syntax check: no problems on any fixture.
+How: PDFium, pdfminer, Ghostscript and pikepdf from Python in a container; pdf.js from Firefox's omni.ja
+(chrome/pdfjs/content/build) under Node; PDFKit from a Swift script. Each reads expected.txt and looks for every
+string in the engine's text (whitespace runs counted as one space) and, where the engine has one, with its search.
+Tilt sweep (six lines, Latin, CJK and Devanagari, 24 to 48 px, turned 0.6, 1, 1.5, 2, 3, 4, 6, 10 and 20 degrees;
+54 strings): PDFium, PDFKit, pdf.js, pdfminer and Ghostscript find all 54 at every angle. poppler finds every line
+up to 3 degrees. A line is levelled only while it is at most 1.6 / sin(angle) times as long as it is high (23 at
+4 degrees, 15 at 6, 9 at 10); a longer one keeps its angle and poppler still cuts it. Before levelling, poppler cut
+long lines from 1.5 degrees.
+
+Fixed while running G2:
+- Apple CoreGraphics ignored the whole text layer ("Failed to determine ascent and descent for font") while the
+  font descriptor said Descent 0. It now says -1, as Tesseract's glyphless font does; a test guards it.
+- With every character at half an em, Tz stretched spaces as much as letters; in short Latin or Korean lines the
+  word gap grew wide enough for poppler to split one line into columns. CIDs now carry rough natural widths
+  (W array): 1 em for CJK and full-width forms, 1/4 em for spaces, 1/2 em otherwise (DW 500). Tz is still
+  100 x boxWidth / (advance x size); for plain half-em text that is PLAN 3.10's formula.
+
+MANUAL PASS (once per release candidate; open the fixtures and one real 3-page export, search a word in each
+script, copy a line, check the selection covers the printed words)
+| Viewer                              | Search | Copy | Selection | Date | Notes |
+|-------------------------------------|--------|------|-----------|------|-------|
+| Chrome (PDFium), desktop            |        |      |           |      | M1    |
+| Chrome (PDFium), Android            |        |      |           |      | M1    |
+| Firefox (pdf.js), desktop           |        |      |           |      | M1    |
+| Adobe Acrobat Reader, Android       |        |      |           |      | M1    |
+| Google Drive viewer, Android        |        |      |           |      | M1    |
+| Files by Google, Android            |        |      |           |      | M1    |
+| Apple Preview, macOS                | pass   |      | pass      | 2026-10-21 | PDFKit check above; copy by hand in M1 |
+
+Fallback if a viewer fails (PLAN R4): Noto Sans + Noto Sans Devanagari for the text layer, CJK pages without a
+text layer and a note in the export sheet.

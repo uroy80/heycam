@@ -1,0 +1,123 @@
+heycam
+Copyright 2026 The heycam authors
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The heycam app includes the third-party components listed below. Each keeps its
+own licence, linked here.
+
+--------------------------------------------------------------------------------
+PdfBox-Android 2.0.27.0 (com.tom-roush:pdfbox-android)
+https://github.com/TomRoush/PdfBox-Android
+Apache License 2.0. Its NOTICE reads:
+
+  Apache PDFBox
+  Copyright 2014 The Apache Software Foundation
+
+  This product includes software developed at
+  The Apache Software Foundation (http://www.apache.org/).
+
+  Based on source code originally developed in the PDFBox and
+  FontBox projects.
+
+  Copyright (c) 2002-2007, www.pdfbox.org
+
+  Based on source code originally developed in the PaDaF project.
+  Copyright (c) 2010 Atos Worldline SAS
+
+  Includes the Adobe Glyph List
+  Copyright 1997, 1998, 2002, 2007, 2010 Adobe Systems Incorporated.
+
+  Includes the Zapf Dingbats Glyph List
+  Copyright 2002, 2010 Adobe Systems Incorporated.
+
+  Includes the Script Property (Scripts-10.0.0.txt)
+  Copyright 2017 Unicode, Inc.
+
+--------------------------------------------------------------------------------
+Fonts, SIL Open Font License 1.1 (https://openfontlicense.org)
+
+  Fraunces
+  Copyright 2018 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces)
+
+  Libre Franklin
+  Copyright 2020 The Libre Franklin Project Authors (https://github.com/googlefonts/Libre-Franklin)
+
+  IBM Plex Mono
+  Copyright (c) 2017 IBM Corp. with Reserved Font Name "Plex"
+
+  Liberation Sans 2.1.5 (bundled by PdfBox-Android)
+  Digitized data copyright (c) 2010 Google Corporation.
+  Copyright (c) 2012 Red Hat, Inc. Liberation is a trademark of Red Hat, Inc.
+
+The licence texts are in core/designsystem/src/main/assets/licences/; the OFL 1.1
+terms are the same for every font above.
+
+--------------------------------------------------------------------------------
+Material Symbols Rounded (icons)
+https://github.com/google/material-design-icons
+Copyright Google LLC. Apache License 2.0.
+
+--------------------------------------------------------------------------------
+SQLite (androidx.sqlite:sqlite-bundled)
+https://www.sqlite.org/copyright.html
+Public domain.
+
+--------------------------------------------------------------------------------
+Apache License 2.0 libraries
+https://www.apache.org/licenses/LICENSE-2.0
+
+  AndroidX and Jetpack Compose (The Android Open Source Project)
+  Accompanist Drawable Painter (The Android Open Source Project)
+  Kotlin standard library, kotlinx.coroutines, kotlinx.serialization (JetBrains s.r.o.)
+  Dagger and Hilt (The Dagger Authors)
+  javax.inject (The JSR-330 Expert Group)
+  Coil (Coil Contributors)
+  Okio (Square, Inc.)
+
+  Jakarta Dependency Injection (Eclipse Foundation). Its NOTICE reads, in part:
+
+    Jakarta Dependency Injection is a trademark of the Eclipse Foundation.
+    https://github.com/eclipse-ee4j/injection-api
+
+--------------------------------------------------------------------------------
+Protocol Buffers runtime (com.google.protobuf, bundled in
+androidx.datastore:datastore-preferences-external-protobuf)
+https://github.com/protocolbuffers/protobuf
+BSD 3-Clause License:
+
+  Copyright 2008 Google Inc.  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
+
+      * Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+      * Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the following disclaimer
+  in the documentation and/or other materials provided with the
+  distribution.
+      * Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+--------------------------------------------------------------------------------
+Google ML Kit and Google Play services
+https://developers.google.com/ml-kit/terms
+
+Document scanning and text recognition use Google ML Kit through Google Play
+services. They are not open source and are provided under the ML Kit Terms of
+Service and the Google APIs Terms of Service.

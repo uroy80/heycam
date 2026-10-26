@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Heading before each page's text in a .txt export of a document with several pages. -->
+    <string name="export_text_page">Page %1$d</string>
+    <!-- File name when a document title has no usable characters. -->
+    <string name="export_fallback_name" translatable="false">heycam</string>
+    <!-- Print job name when several documents print together. -->
+    <string name="export_print_job" translatable="false">heycam</string>
+</resources>

@@ -1,0 +1,25 @@
+heycam accessibility record: TalkBack, large text, dark mode
+Update once per release candidate (docs/RELEASE-CHECKLIST.txt §2). The Play listing says "Dark mode, large text
+and TalkBack"; the production listing goes public only with a real-phone TalkBack pass in the table below.
+
+AUTOMATED (every CI run)
+- Semantics: core/designsystem ComponentSemanticsTest (what TalkBack reads, roles, 48 dp touch targets) and
+  PageGridReorderTest (TalkBack move actions), plus the screen tests in feature/* (labels, headings, selected
+  state).
+- Contrast: core/designsystem ContrastTest, text 4.5:1 and borders 3:1 in Day paper and Night ink.
+- Large text: the *_font200 goldens (Home, Review, Document pages and text, Settings, Storage, scanner download),
+  compared by the Screenshots job.
+
+MANUAL TALKBACK PASS (real phone: swipe through each screen, activate every control, listen for each label, role
+and state; note anything unlabelled, read twice, or out of order)
+| Date | Phone, Android, TalkBack | Home | Review | Document | Text | Export | Tools | Settings | Notes |
+|------|--------------------------|------|--------|----------|------|--------|-------|----------|-------|
+|      |                          |      |        |          |      |        |       |          |       |
+
+NOTES
+2026-10-27, API 37 emulator, TalkBack 17.0: TalkBack runs over heycam and reads, for example, the Text language
+dialog as "Selected. Auto. From your phone's languages. Radio button. 1 of 6. In list. 6 items". A full pass could
+not be driven over adb, because TalkBack does not treat adb's injected swipes as gestures. This is no substitute
+for the phone pass above.
+2026-10-27, new API 37 emulator at 360 dp (wm density 480) with 200% text: Home and the export sheet clip nothing;
+landscape with a "tall" cutout keeps the Document screen clear of it (docs/device-pass.txt). Also no substitute.

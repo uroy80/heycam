@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Entry points (PLAN F11): the Quick Settings tile and the launcher shortcuts. -->
+<resources>
+    <string name="entry_tile_scan">Scan</string>
+    <string name="entry_shortcut_scan">Scan</string>
+    <string name="entry_shortcut_scan_long">Scan a document</string>
+    <string name="entry_shortcut_import">Import</string>
+    <string name="entry_shortcut_import_long">Import photos</string>
+    <string name="entry_shortcut_search">Search</string>
+    <string name="entry_shortcut_search_long">Search documents</string>
+
+    <!-- Broadsheet paper and ink (theme.json color.light). -->
+    <color name="entry_paper">#F4EFE4</color>
+    <color name="entry_ink">#141210</color>
+</resources>
