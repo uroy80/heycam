@@ -42,7 +42,7 @@ espresso = "3.7.0"
 uiautomator = "2.4.0"
 turbine = "1.2.1"
 truth = "1.4.5"
-roborazzi = "1.76.0"                # 2026-09-29; gate G4
+roborazzi = "1.77.0"                # 2026-09-29; gate G4
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
